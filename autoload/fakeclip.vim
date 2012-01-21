@@ -213,7 +213,16 @@ endfunction
 
 
 function! s:read_pastebuffer_tmux()
-  return system('tmux show-buffer')
+  if exists('g:fakeclip_use_tmux_save_buffer') &&
+        \ g:fakeclip_use_tmux_save_buffer == 1
+    let _ = tempname()
+    call system('tmux save-buffer ' . shellescape(_))
+    let content = filereadable(_) ? join(readfile(_, 'b'), "\n") : ''
+    call delete(_)
+    return content
+  else
+    return system('tmux show-buffer')
+  endif
 endfunction
 
 
