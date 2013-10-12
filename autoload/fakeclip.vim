@@ -29,6 +29,8 @@ elseif has('win32unix')
   let s:PLATFORM = 'cygwin'
 elseif $DISPLAY != '' && executable('xclip')
   let s:PLATFORM = 'x'
+elseif executable('clip-client')
+  let s:PLATFORM = 'clip_client'
 else
   let s:PLATFORM = 'unknown'
 endif
@@ -176,6 +178,11 @@ function! s:read_clipboard_x()
 endfunction
 
 
+function! s:read_clipboard_clip_client()
+  return system('clip-client get')
+endfunction
+
+
 function! s:read_clipboard_unknown()
   echoerr 'Getting the clipboard content is not supported on this platform:'
   \       s:PLATFORM
@@ -245,6 +252,12 @@ endfunction
 
 function! s:write_clipboard_x(text)
   call system('xclip', a:text)
+  return
+endfunction
+
+
+function! s:write_clipboard_clip_client(text)
+  call system('clip-client set', a:text)
   return
 endfunction
 
